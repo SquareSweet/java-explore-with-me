@@ -21,3 +21,25 @@ services:
       - POSTGRES_DB=explore_with_me_stats
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
+
+  ewm-service:
+    build: ./ewm
+    container_name: explore-with-me
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ewm-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/explore_with_me
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+
+  ewm-db:
+    image: postgres:14-alpine
+    container_name: explore-with-me-postgres
+    ports:
+      - "6542:5432"
+    environment:
+      - POSTGRES_DB=explore_with_me
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
