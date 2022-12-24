@@ -26,7 +26,7 @@ public class EndpointHit {
     @NotBlank
     @Column(length = 15)
     String ip;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "hit_time")
     LocalDateTime timestamp;
 }
