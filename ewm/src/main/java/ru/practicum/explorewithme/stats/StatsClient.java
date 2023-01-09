@@ -26,7 +26,11 @@ public class StatsClient {
                 .build();
     }
 
-    public ResponseEntity<Object> post(String path, EndpointHit body) {
+    public void saveHit(EndpointHit endpointHit) {
+        post("", endpointHit);
+    }
+
+    private ResponseEntity<Object> post(String path, EndpointHit body) {
         HttpEntity<EndpointHit> requestEntity = new HttpEntity<>(body);
 
         ResponseEntity<Object> response;

@@ -9,6 +9,8 @@ import ru.practicum.explorewithme.category.model.dto.CategoryDto;
 import ru.practicum.explorewithme.category.repository.CategoryRepository;
 import ru.practicum.explorewithme.common.OffsetPageRequest;
 import ru.practicum.explorewithme.common.exception.CategoryNotFoundException;
+import ru.practicum.explorewithme.common.exception.IllegalOperationException;
+import ru.practicum.explorewithme.event.repository.EventRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CategoryService {
     private final CategoryRepository repository;
+    private final EventRepository eventRepository;
     private final CategoryMapper mapper;
 
     public CategoryDto create(CategoryDto categoryDto) {
@@ -36,7 +39,9 @@ public class CategoryService {
     }
 
     public void deleteById(Long categoryId) {
-        //TODO: проверка наушения целостности данных после реализации ивентов
+        if (!eventRepository.findAllByCategoryId(categoryId).isEmpty()) {
+            throw new IllegalOperationException("Category id: " + categoryId + " can not be deleted while has events");
+        }
         repository.deleteById(categoryId);
         log.info("Deleted category id: {}", categoryId);
     }

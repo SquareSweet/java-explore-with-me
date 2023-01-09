@@ -8,13 +8,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.explorewithme.common.exception.CategoryNotFoundException;
+import ru.practicum.explorewithme.common.exception.EventNotFoundException;
+import ru.practicum.explorewithme.common.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
 
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
-    @ExceptionHandler(CategoryNotFoundException.class)
+    @ExceptionHandler({CategoryNotFoundException.class, UserNotFoundException.class, EventNotFoundException.class})
     public ResponseEntity<ApiError> handleNotFoundException(RuntimeException exception) {
         log.debug(exception.getMessage());
         return ResponseEntity

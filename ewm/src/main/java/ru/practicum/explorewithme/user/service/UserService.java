@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.explorewithme.common.OffsetPageRequest;
+import ru.practicum.explorewithme.common.exception.UserNotFoundException;
 import ru.practicum.explorewithme.user.mapper.UserMapper;
 import ru.practicum.explorewithme.user.model.User;
 import ru.practicum.explorewithme.user.model.dto.UserDto;
@@ -34,5 +35,9 @@ public class UserService {
         return repository.findAllByIdIn(List.of(ids), OffsetPageRequest.of(from, size)).stream()
                 .map(mapper::toUserDto)
                 .collect(Collectors.toList());
+    }
+
+    public User getById(Long userId) {
+        return repository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 }
