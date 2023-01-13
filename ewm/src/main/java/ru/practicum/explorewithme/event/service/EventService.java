@@ -145,7 +145,7 @@ public class EventService {
 
     @Transactional
     public EventFullDto getByIdPublic(Long eventId, HttpServletRequest request) {
-        Event event = repository.findByIdAndState(eventId, EventStatus.PUBLISHED)
+        Event event = repository.findAllByIdAndState(eventId, EventStatus.PUBLISHED)
                 .orElseThrow(() -> new EventNotFoundException(eventId));
         event.setViews(event.getViews() + 1);
         repository.save(event);
@@ -188,6 +188,10 @@ public class EventService {
     public Event getByIdForRequest(Long eventId) {
         return repository.findById(eventId)
                 .orElseThrow(() -> new EventNotFoundException(eventId));
+    }
+
+    public List<Event> getByIdList(List<Long> eventIds) {
+        return repository.findAllByIdIn(eventIds);
     }
 
     public Event addConfirmedRequest(Event event) {

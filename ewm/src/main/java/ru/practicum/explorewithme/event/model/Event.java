@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"category", "initiator", "location"})
+@ToString(exclude = {"category", "initiator", "location"})
 @Entity
 @Table(name = "events")
 public class Event {
