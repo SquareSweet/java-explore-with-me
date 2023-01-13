@@ -8,6 +8,7 @@ import ru.practicum.explorewithme.event.model.EventStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateBetween(
@@ -34,7 +35,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findAllByInitiatorId(Long userId, PageRequest pageRequest);
 
-    Event findByIdAndState(Long eventId, EventStatus eventStatus);
+    Optional<Event> findByIdAndState(Long eventId, EventStatus eventStatus);
 
     List<Event> findAllByCategoryId(Long categoryId);
 }

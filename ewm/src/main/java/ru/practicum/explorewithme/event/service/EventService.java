@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.category.model.dto.CategoryDto;
 import ru.practicum.explorewithme.category.service.CategoryService;
 import ru.practicum.explorewithme.common.OffsetPageRequest;
@@ -41,6 +42,8 @@ public class EventService {
         User user = userService.getById(userId); //throws exception if user does not exist
         CategoryDto category = categoryService.getById(newEventDto.getCategory()); //throws exception if category does not exist
         Event event = mapper.toEvent(newEventDto, category, user);
+        event.setConfirmedRequests(0L);
+        event.setCreatedOn(LocalDateTime.now());
         event = repository.save(event);
         log.info("Created event id: {}", event.getId());
         return mapper.toEventFullDto(event);
@@ -99,7 +102,7 @@ public class EventService {
         return mapper.toEventFullDto(event);
     }
 
-    public EventFullDto cancel(Long userId, Long eventId) {
+    public EventFullDto cancel(Long eventId, Long userId) {
         userService.getById(userId); //throws exception if user does not exist
         Event event = repository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         if (event.getState() != EventStatus.PENDING) {
@@ -134,17 +137,16 @@ public class EventService {
                 .map(mapper::toEventFullDto).collect(Collectors.toList());
     }
 
-    public EventFullDto getById(Long userId, Long eventId) {
+    public EventFullDto getById(Long eventId, Long userId) {
         Event event = repository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         checkInitiator(event, userId);
         return mapper.toEventFullDto(event);
     }
 
+    @Transactional
     public EventFullDto getByIdPublic(Long eventId, HttpServletRequest request) {
-        Event event = repository.findByIdAndState(eventId, EventStatus.PUBLISHED);
-        if (event == null) {
-            throw new EventNotFoundException(eventId);
-        }
+        Event event = repository.findByIdAndState(eventId, EventStatus.PUBLISHED)
+                .orElseThrow(() -> new EventNotFoundException(eventId));
         event.setViews(event.getViews() + 1);
         repository.save(event);
         saveHit(request);
@@ -181,6 +183,16 @@ public class EventService {
         }
         saveHit(request);
         return events.stream().map(mapper::toEventShortDto).collect(Collectors.toList());
+    }
+
+    public Event getByIdForRequest(Long eventId) {
+        return repository.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException(eventId));
+    }
+
+    public Event addConfirmedRequest(Event event) {
+        event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+        return repository.save(event);
     }
 
     private void checkInitiator(Event event, Long userId) {

@@ -1,14 +1,16 @@
 package ru.practicum.explorewithme.common;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.explorewithme.common.exception.CategoryNotFoundException;
 import ru.practicum.explorewithme.common.exception.EventNotFoundException;
+import ru.practicum.explorewithme.common.exception.RequestNotFoundException;
 import ru.practicum.explorewithme.common.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
@@ -16,7 +18,8 @@ import java.time.LocalDateTime;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
-    @ExceptionHandler({CategoryNotFoundException.class, UserNotFoundException.class, EventNotFoundException.class})
+    @ExceptionHandler({CategoryNotFoundException.class, UserNotFoundException.class, EventNotFoundException.class,
+            RequestNotFoundException.class})
     public ResponseEntity<ApiError> handleNotFoundException(RuntimeException exception) {
         log.debug(exception.getMessage());
         return ResponseEntity
@@ -30,8 +33,8 @@ public class ErrorHandler {
                         .build());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException exception) {
+    @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestParameterException.class})
+    public ResponseEntity<ApiError> handleBadRequest(Exception exception) {
         log.debug(exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -44,8 +47,8 @@ public class ErrorHandler {
                         .build());
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiError> handleConflict(ConstraintViolationException exception) {
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleConflict(DataIntegrityViolationException exception) {
         log.debug(exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -62,12 +65,12 @@ public class ErrorHandler {
     public ResponseEntity<ApiError> handleException(Exception exception) {
         log.debug(exception.getMessage());
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiError.builder()
                         .errors(exception.getStackTrace())
                         .message(exception.getMessage())
                         .reason(exception.getLocalizedMessage())
-                        .status(HttpStatus.CONFLICT)
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .timestamp(LocalDateTime.now())
                         .build());
     }
