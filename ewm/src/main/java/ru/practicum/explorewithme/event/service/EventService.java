@@ -158,6 +158,7 @@ public class EventService {
                                          Boolean onlyAvailable, String sort, int from, int size,
                                          HttpServletRequest request) {
         if (text.isBlank()) {
+            saveHit(request);
             return List.of();
         }
         if (rangeStart == null) {
@@ -239,8 +240,8 @@ public class EventService {
     private void saveHit(HttpServletRequest request) {
         statsClient.saveHit(EndpointHit.builder()
                 .app("ewm")
-                .uri(request.getRemoteAddr())
-                .ip(request.getRequestURI())
+                .uri(request.getRequestURI())
+                .ip(request.getRemoteAddr())
                 .timestamp(LocalDateTime.now())
                 .build());
     }
