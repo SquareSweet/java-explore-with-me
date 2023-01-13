@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class ApiError {
-    Object errors[];
+    Object[] errors;
     String message;
     String reason;
     HttpStatus status;

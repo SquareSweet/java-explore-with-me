@@ -6,6 +6,6 @@ import ru.practicum.explorewithme.user.model.User;
 
 import java.util.List;
 
-public interface UserRepository extends JpaRepository <User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByIdIn(List<Long> ids, PageRequest pageRequest);
 }

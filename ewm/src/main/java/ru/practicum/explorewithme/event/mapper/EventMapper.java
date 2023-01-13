@@ -57,7 +57,7 @@ public class EventMapper {
                 .build();
     }
 
-    public Event toEvent (NewEventDto newEventDto, CategoryDto category, User initiator) {
+    public Event toEvent(NewEventDto newEventDto, CategoryDto category, User initiator) {
         return Event.builder()
                 .annotation(newEventDto.getAnnotation())
                 .category(categoryMapper.toCategory(category))
@@ -76,7 +76,7 @@ public class EventMapper {
                 .build();
     }
 
-    public Event toEvent (UpdateEventRequestDto updateEventRequestDto, CategoryDto category) {
+    public Event toEvent(UpdateEventRequestDto updateEventRequestDto, CategoryDto category) {
         return Event.builder()
                 .annotation(updateEventRequestDto.getAnnotation())
                 .category(categoryMapper.toCategory(category))
