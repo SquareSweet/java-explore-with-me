@@ -2,7 +2,7 @@ package ru.practicum.explorewithme.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explorewithme.user.model.dto.UserDto;
+import ru.practicum.explorewithme.user.dto.UserDto;
 import ru.practicum.explorewithme.user.service.UserService;
 
 import javax.validation.Valid;
@@ -17,7 +17,7 @@ public class UserAdminController {
     private final UserService userService;
 
     @GetMapping
-    public List<UserDto> getAllUsers(@RequestParam(name = "ids", defaultValue = "") Long[] ids,
+    public List<UserDto> getAllUsers(@RequestParam(name = "ids", required = false) List<Long> ids,
                                      @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                      @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
         return userService.getAll(ids, from, size);

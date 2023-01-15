@@ -2,8 +2,8 @@ package ru.practicum.explorewithme.compilation.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explorewithme.compilation.model.dto.CompilationDto;
-import ru.practicum.explorewithme.compilation.model.dto.NewCompilationDto;
+import ru.practicum.explorewithme.compilation.dto.CompilationDto;
+import ru.practicum.explorewithme.compilation.dto.NewCompilationDto;
 import ru.practicum.explorewithme.compilation.service.CompilationService;
 
 import javax.validation.Valid;
@@ -15,22 +15,22 @@ public class CompilationAdminController {
     private final CompilationService compilationService;
 
     @PostMapping
-    public CompilationDto createEvent(@Valid @RequestBody NewCompilationDto newCompilationDto) {
+    public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto newCompilationDto) {
         return compilationService.create(newCompilationDto);
     }
 
     @DeleteMapping("/{compilationId}")
-    public void deleteUser(@PathVariable Long compilationId) {
+    public void deleteCompilation(@PathVariable Long compilationId) {
         compilationService.deleteById(compilationId);
     }
 
     @PatchMapping("/{compilationId}/events/{eventId}")
-    public CompilationDto addEvent(@PathVariable Long compilationId, @PathVariable Long eventId) {
+    public CompilationDto addCompilation(@PathVariable Long compilationId, @PathVariable Long eventId) {
         return compilationService.addEvent(compilationId, eventId);
     }
 
     @DeleteMapping("/{compilationId}/events/{eventId}")
-    public CompilationDto removeEvent(@PathVariable Long compilationId, @PathVariable Long eventId) {
+    public CompilationDto removeCompilation(@PathVariable Long compilationId, @PathVariable Long eventId) {
         return compilationService.removeEvent(compilationId, eventId);
     }
 

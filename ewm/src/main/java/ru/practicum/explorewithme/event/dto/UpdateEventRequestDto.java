@@ -1,4 +1,4 @@
-package ru.practicum.explorewithme.event.model.dto;
+package ru.practicum.explorewithme.event.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;

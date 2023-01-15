@@ -3,8 +3,8 @@ package ru.practicum.explorewithme.event.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explorewithme.event.model.dto.EventFullDto;
-import ru.practicum.explorewithme.event.model.dto.NewEventDto;
+import ru.practicum.explorewithme.event.dto.EventFullDto;
+import ru.practicum.explorewithme.event.dto.NewEventDto;
 import ru.practicum.explorewithme.event.service.EventService;
 
 import javax.validation.constraints.Positive;

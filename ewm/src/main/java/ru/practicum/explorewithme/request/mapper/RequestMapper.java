@@ -3,7 +3,7 @@ package ru.practicum.explorewithme.request.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.explorewithme.request.model.Request;
-import ru.practicum.explorewithme.request.model.dto.RequestDto;
+import ru.practicum.explorewithme.request.dto.RequestDto;
 
 @Component
 @RequiredArgsConstructor

@@ -21,7 +21,7 @@ public class ErrorHandler {
     @ExceptionHandler({CategoryNotFoundException.class, UserNotFoundException.class, EventNotFoundException.class,
             RequestNotFoundException.class})
     public ResponseEntity<ApiError> handleNotFoundException(RuntimeException exception) {
-        log.debug(exception.getMessage());
+        log.error(exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(ApiError.builder()
@@ -35,7 +35,7 @@ public class ErrorHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestParameterException.class})
     public ResponseEntity<ApiError> handleBadRequest(Exception exception) {
-        log.debug(exception.getMessage());
+        log.error(exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiError.builder()
@@ -49,7 +49,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleConflict(DataIntegrityViolationException exception) {
-        log.debug(exception.getMessage());
+        log.error(exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ApiError.builder()
@@ -63,7 +63,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiError> handleException(Exception exception) {
-        log.debug(exception.getMessage());
+        log.error(exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiError.builder()

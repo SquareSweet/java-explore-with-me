@@ -3,13 +3,13 @@ package ru.practicum.explorewithme.event.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.explorewithme.category.mapper.CategoryMapper;
-import ru.practicum.explorewithme.category.model.dto.CategoryDto;
+import ru.practicum.explorewithme.category.dto.CategoryDto;
 import ru.practicum.explorewithme.event.model.Event;
 import ru.practicum.explorewithme.event.model.EventStatus;
-import ru.practicum.explorewithme.event.model.dto.EventFullDto;
-import ru.practicum.explorewithme.event.model.dto.EventShortDto;
-import ru.practicum.explorewithme.event.model.dto.NewEventDto;
-import ru.practicum.explorewithme.event.model.dto.UpdateEventRequestDto;
+import ru.practicum.explorewithme.event.dto.EventFullDto;
+import ru.practicum.explorewithme.event.dto.EventShortDto;
+import ru.practicum.explorewithme.event.dto.NewEventDto;
+import ru.practicum.explorewithme.event.dto.UpdateEventRequestDto;
 import ru.practicum.explorewithme.user.mapper.UserMapper;
 import ru.practicum.explorewithme.user.model.User;
 

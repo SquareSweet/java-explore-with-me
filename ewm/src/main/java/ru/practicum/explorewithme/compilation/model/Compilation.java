@@ -8,7 +8,8 @@ import javax.persistence.*;
 import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

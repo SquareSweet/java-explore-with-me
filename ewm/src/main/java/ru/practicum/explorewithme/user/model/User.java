@@ -6,7 +6,8 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.*;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

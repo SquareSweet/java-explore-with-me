@@ -1,4 +1,4 @@
-package ru.practicum.explorewithme.compilation.model.dto;
+package ru.practicum.explorewithme.compilation.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;

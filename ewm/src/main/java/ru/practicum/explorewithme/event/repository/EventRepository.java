@@ -17,27 +17,29 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     );
 
     @Query("select e from Event e " +
-            "where e.category.id in (:categories) " +
-            "and e.paid = :paid " +
-            "and e.eventDate between :rangeStart and :rangeEnd " +
-            "and (lower(e.annotation) like lower(:text) or lower(e.description) like lower(:text))")
+            "where e.state = :state " +
+            "and (:categories is null or e.category.id in (:categories)) " +
+            "and (:paid is null or e.paid = :paid) " +
+            "and (cast(:rangeEnd as date) is null and e.eventDate >= :rangeStart " +
+            "or e.eventDate between :rangeStart and :rangeEnd) " +
+            "and (:text is null or lower(e.annotation) like lower(:text) or lower(e.description) like lower(:text))")
     List<Event> findAllByParams(String text, List<Long> categories, Boolean paid,
-            LocalDateTime rangeStart, LocalDateTime rangeEnd, PageRequest pageRequest);
+            LocalDateTime rangeStart, LocalDateTime rangeEnd, EventStatus state, PageRequest pageRequest);
 
     @Query("select e from Event e " +
-            "where e.category.id in (:categories) " +
-            "and e.paid = :paid " +
-            "and e.eventDate between :rangeStart and :rangeEnd " +
-            "and (lower(e.annotation) like lower(:text) or lower(e.description) like lower(:text)) " +
+            "where e.state = :state " +
+            "and (:categories is null or e.category.id in (:categories)) " +
+            "and (:paid is null or e.paid = :paid) " +
+            "and (cast(:rangeEnd as date) is null and e.eventDate >= :rangeStart " +
+            "or e.eventDate between :rangeStart and :rangeEnd) " +
+            "and (:text is null or lower(e.annotation) like lower(:text) or lower(e.description) like lower(:text)) " +
             "and (e.participantLimit - e.confirmedRequests > 0)")
     List<Event> findAllByParamsAvailable(String text, List<Long> categories, Boolean paid,
-            LocalDateTime rangeStart, LocalDateTime rangeEnd, PageRequest pageRequest);
+            LocalDateTime rangeStart, LocalDateTime rangeEnd, EventStatus state, PageRequest pageRequest);
 
     List<Event> findAllByInitiatorId(Long userId, PageRequest pageRequest);
 
     Optional<Event> findAllByIdAndState(Long eventId, EventStatus eventStatus);
 
-    List<Event> findAllByIdIn(List<Long> ids);
-
-    List<Event> findAllByCategoryId(Long categoryId);
+    Long countAllByCategoryId(Long categoryId);
 }
