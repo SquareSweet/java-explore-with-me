@@ -10,19 +10,18 @@ import ru.practicum.explorewithme.category.service.CategoryService;
 import ru.practicum.explorewithme.common.OffsetPageRequest;
 import ru.practicum.explorewithme.common.exception.EventNotFoundException;
 import ru.practicum.explorewithme.common.exception.IllegalOperationException;
+import ru.practicum.explorewithme.event.dto.*;
 import ru.practicum.explorewithme.event.mapper.EventMapper;
 import ru.practicum.explorewithme.event.model.Event;
 import ru.practicum.explorewithme.event.model.EventStatus;
-import ru.practicum.explorewithme.event.dto.EventFullDto;
-import ru.practicum.explorewithme.event.dto.EventShortDto;
-import ru.practicum.explorewithme.event.dto.NewEventDto;
-import ru.practicum.explorewithme.event.dto.UpdateEventRequestDto;
 import ru.practicum.explorewithme.event.repository.EventRepository;
 import ru.practicum.explorewithme.user.model.User;
 import ru.practicum.explorewithme.user.service.UserServiceImpl;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,10 +46,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto update(NewEventDto newEventDto, Long eventId) {
-        CategoryDto category = categoryService.getById(newEventDto.getCategory()); //throws exception if category does not exist
+    public EventFullDto update(UpdateEventAdminDto updateEventAdminDto, Long eventId) {
+        CategoryDto category = categoryService.getById(updateEventAdminDto.getCategory()); //throws exception if category does not exist
         Event event = repository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
-        Event updatedEvent = mapper.toEvent(newEventDto, category, event.getInitiator());
+        Event updatedEvent = mapper.toEvent(updateEventAdminDto, category);
         event = updateEventFields(event, updatedEvent);
         repository.save(event);
         log.info("Updated event id: {}", eventId);
@@ -190,6 +189,17 @@ public class EventServiceImpl implements EventService {
     public Event getByIdNotMapped(Long eventId) {
         return repository.findById(eventId)
                 .orElseThrow(() -> new EventNotFoundException(eventId));
+    }
+
+    @Override
+    public List<Event> getByIdListNotMapped(List<Long> eventIds) {
+        List<Event> events = repository.findAllByIdIn(eventIds);
+        Set<Long> idsNotFound = new HashSet<>(eventIds);
+        events.stream().map(Event::getId).collect(Collectors.toList()).forEach(idsNotFound::remove);
+        if (!idsNotFound.isEmpty()) {
+            throw new EventNotFoundException(idsNotFound);
+        }
+        return events;
     }
 
     @Override

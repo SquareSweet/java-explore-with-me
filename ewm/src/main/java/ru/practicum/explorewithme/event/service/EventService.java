@@ -1,10 +1,7 @@
 package ru.practicum.explorewithme.event.service;
 
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.explorewithme.event.dto.EventFullDto;
-import ru.practicum.explorewithme.event.dto.EventShortDto;
-import ru.practicum.explorewithme.event.dto.NewEventDto;
-import ru.practicum.explorewithme.event.dto.UpdateEventRequestDto;
+import ru.practicum.explorewithme.event.dto.*;
 import ru.practicum.explorewithme.event.model.Event;
 
 import java.time.LocalDateTime;
@@ -13,7 +10,7 @@ import java.util.List;
 public interface EventService {
     EventFullDto create(NewEventDto newEventDto, Long userId);
 
-    EventFullDto update(NewEventDto newEventDto, Long eventId);
+    EventFullDto update(UpdateEventAdminDto updateEventAdminDto, Long eventId);
 
     EventFullDto publish(Long eventId);
 
@@ -38,6 +35,8 @@ public interface EventService {
                                            Boolean onlyAvailable, String sort, int from, int size);
 
     Event getByIdNotMapped(Long eventId);
+
+    List<Event> getByIdListNotMapped(List<Long> eventIds);
 
     Event addConfirmedRequest(Event event);
 }

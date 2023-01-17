@@ -4,12 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.explorewithme.category.mapper.CategoryMapper;
 import ru.practicum.explorewithme.category.dto.CategoryDto;
+import ru.practicum.explorewithme.event.dto.*;
 import ru.practicum.explorewithme.event.model.Event;
 import ru.practicum.explorewithme.event.model.EventStatus;
-import ru.practicum.explorewithme.event.dto.EventFullDto;
-import ru.practicum.explorewithme.event.dto.EventShortDto;
-import ru.practicum.explorewithme.event.dto.NewEventDto;
-import ru.practicum.explorewithme.event.dto.UpdateEventRequestDto;
 import ru.practicum.explorewithme.user.mapper.UserMapper;
 import ru.practicum.explorewithme.user.model.User;
 
@@ -88,6 +85,20 @@ public class EventMapper {
                 .paid(updateEventRequestDto.getPaid())
                 .state(EventStatus.PENDING)
                 .title(updateEventRequestDto.getTitle())
+                .build();
+    }
+
+    public Event toEvent(UpdateEventAdminDto updateEventAdminDto, CategoryDto category) {
+        return Event.builder()
+                .annotation(updateEventAdminDto.getAnnotation())
+                .category(categoryMapper.toCategory(category))
+                .description(updateEventAdminDto.getDescription())
+                .eventDate(LocalDateTime.parse(updateEventAdminDto.getEventDate(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .participantLimit(updateEventAdminDto.getParticipantLimit())
+                .requestModeration(updateEventAdminDto.getRequestModeration())
+                .paid(updateEventAdminDto.getPaid())
+                .title(updateEventAdminDto.getTitle())
                 .build();
     }
 }

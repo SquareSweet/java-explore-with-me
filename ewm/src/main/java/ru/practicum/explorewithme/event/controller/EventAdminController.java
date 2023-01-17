@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.event.dto.EventFullDto;
-import ru.practicum.explorewithme.event.dto.NewEventDto;
+import ru.practicum.explorewithme.event.dto.UpdateEventAdminDto;
 import ru.practicum.explorewithme.event.service.EventService;
 
 import javax.validation.constraints.Positive;
@@ -31,8 +31,8 @@ public class EventAdminController {
     }
 
     @PutMapping("/{eventId}")
-    public EventFullDto updateEvent(@RequestBody NewEventDto newEventDto, @PathVariable Long eventId) {
-        return eventService.update(newEventDto, eventId);
+    public EventFullDto updateEvent(@RequestBody UpdateEventAdminDto updateEventAdminDto, @PathVariable Long eventId) {
+        return eventService.update(updateEventAdminDto, eventId);
     }
 
     @PatchMapping("/{eventId}/publish")

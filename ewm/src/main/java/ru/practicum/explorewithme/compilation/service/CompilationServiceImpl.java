@@ -28,10 +28,9 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto create(NewCompilationDto newCompilationDto) {
         List<Event> events = new ArrayList<>();
-        if (newCompilationDto.getEvents() != null) {
-            for (long id : newCompilationDto.getEvents()) {
-                events.add(eventService.getByIdNotMapped(id)); //throws exception if event does not exist
-            }
+        if (!newCompilationDto.getEvents().isEmpty()) {
+            //throws exception if some events do not exist
+            events.addAll(eventService.getByIdListNotMapped(newCompilationDto.getEvents()));
         }
         Compilation compilation = repository.save(mapper.toCompilation(newCompilationDto, events));
         log.info("Create compilation id: {}", compilation.getId());

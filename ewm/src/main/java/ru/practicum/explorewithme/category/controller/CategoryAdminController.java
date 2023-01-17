@@ -3,6 +3,7 @@ package ru.practicum.explorewithme.category.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.category.dto.CategoryDto;
+import ru.practicum.explorewithme.category.dto.NewCategoryDto;
 import ru.practicum.explorewithme.category.service.CategoryService;
 
 import javax.validation.Valid;
@@ -14,8 +15,8 @@ public class CategoryAdminController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public CategoryDto createCategory(@Valid @RequestBody CategoryDto categoryDto) {
-        return categoryService.create(categoryDto);
+    public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto newCategoryDto) {
+        return categoryService.create(newCategoryDto);
     }
 
     @PatchMapping
