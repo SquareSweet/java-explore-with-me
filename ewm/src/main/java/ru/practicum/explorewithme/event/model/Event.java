@@ -48,5 +48,4 @@ public class Event {
     @Enumerated(EnumType.STRING)
     EventStatus state;
     String title;
-    Long views;
 }

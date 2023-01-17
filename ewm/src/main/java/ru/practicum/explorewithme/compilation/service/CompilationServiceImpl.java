@@ -12,6 +12,7 @@ import ru.practicum.explorewithme.compilation.dto.NewCompilationDto;
 import ru.practicum.explorewithme.compilation.repository.CompilationRepository;
 import ru.practicum.explorewithme.event.model.Event;
 import ru.practicum.explorewithme.event.service.EventService;
+import ru.practicum.explorewithme.stats.StatsClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository repository;
     private final CompilationMapper mapper;
     private final EventService eventService;
+    private final StatsClient statsClient;
 
     @Override
     public CompilationDto create(NewCompilationDto newCompilationDto) {
@@ -34,7 +36,8 @@ public class CompilationServiceImpl implements CompilationService {
         }
         Compilation compilation = repository.save(mapper.toCompilation(newCompilationDto, events));
         log.info("Create compilation id: {}", compilation.getId());
-        return mapper.toCompilationDto(compilation);
+        return mapper.toCompilationDto(compilation,
+                statsClient.getViewsMap(events.stream().map(Event::getId).collect(Collectors.toList())));
     }
 
     @Override
@@ -51,7 +54,11 @@ public class CompilationServiceImpl implements CompilationService {
         compilation.getEvents().add(event);
         compilation = repository.save(compilation);
         log.info("Event id: {} added to compilation id: {}", eventId, compilationId);
-        return mapper.toCompilationDto(compilation);
+        return mapper.toCompilationDto(compilation, statsClient.getViewsMap(
+                compilation.getEvents().stream()
+                        .map(Event::getId)
+                        .collect(Collectors.toList()))
+        );
     }
 
     @Override
@@ -62,7 +69,11 @@ public class CompilationServiceImpl implements CompilationService {
         compilation.getEvents().remove(event);
         compilation = repository.save(compilation);
         log.info("Event id: {} removed from compilation id: {}", eventId, compilationId);
-        return mapper.toCompilationDto(compilation);
+        return mapper.toCompilationDto(compilation, statsClient.getViewsMap(
+                compilation.getEvents().stream()
+                        .map(Event::getId)
+                        .collect(Collectors.toList()))
+        );
     }
 
     @Override
@@ -87,13 +98,21 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto getById(Long compilationId) {
         Compilation compilation = repository.findById(compilationId)
                 .orElseThrow(() -> new CompilationNotFoundException(compilationId));
-        return mapper.toCompilationDto(compilation);
+        return mapper.toCompilationDto(compilation, statsClient.getViewsMap(
+                compilation.getEvents().stream()
+                        .map(Event::getId)
+                        .collect(Collectors.toList()))
+        );
     }
 
     @Override
     public List<CompilationDto> getByPinned(Boolean pinned, int from, int size) {
-       return repository.findAllByPinned(pinned, OffsetPageRequest.of(from, size)).stream()
-               .map(mapper::toCompilationDto)
-               .collect(Collectors.toList());
+        return repository.findAllByPinned(pinned, OffsetPageRequest.of(from, size)).stream()
+                .map(c -> mapper.toCompilationDto(c, statsClient.getViewsMap(
+                        c.getEvents().stream()
+                                .map(Event::getId)
+                                .collect(Collectors.toList()))
+                ))
+                .collect(Collectors.toList());
     }
 }

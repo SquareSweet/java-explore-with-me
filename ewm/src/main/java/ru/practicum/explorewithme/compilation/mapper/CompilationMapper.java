@@ -9,6 +9,7 @@ import ru.practicum.explorewithme.event.mapper.EventMapper;
 import ru.practicum.explorewithme.event.model.Event;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -24,13 +25,13 @@ public class CompilationMapper {
                 .build();
     }
 
-    public CompilationDto toCompilationDto(Compilation compilation) {
+    public CompilationDto toCompilationDto(Compilation compilation, Map<Long, Long> eventsViews) {
         return CompilationDto.builder()
                 .id(compilation.getId())
                 .title(compilation.getTitle())
                 .pinned(compilation.getPinned())
                 .events(compilation.getEvents().stream()
-                        .map(eventMapper::toEventShortDto)
+                        .map(event -> eventMapper.toEventShortDto(event, eventsViews.get(event.getId())))
                         .collect(Collectors.toList()))
                 .build();
     }

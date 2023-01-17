@@ -15,6 +15,7 @@ import ru.practicum.explorewithme.event.mapper.EventMapper;
 import ru.practicum.explorewithme.event.model.Event;
 import ru.practicum.explorewithme.event.model.EventStatus;
 import ru.practicum.explorewithme.event.repository.EventRepository;
+import ru.practicum.explorewithme.stats.StatsClient;
 import ru.practicum.explorewithme.user.model.User;
 import ru.practicum.explorewithme.user.service.UserServiceImpl;
 
@@ -32,6 +33,7 @@ public class EventServiceImpl implements EventService {
     private final CategoryService categoryService;
     private final UserServiceImpl userService;
     private final EventMapper mapper;
+    private final StatsClient statsClient;
 
     @Override
     public EventFullDto create(NewEventDto newEventDto, Long userId) {
@@ -42,7 +44,7 @@ public class EventServiceImpl implements EventService {
         event.setCreatedOn(LocalDateTime.now());
         event = repository.save(event);
         log.info("Created event id: {}", event.getId());
-        return mapper.toEventFullDto(event);
+        return mapper.toEventFullDto(event, statsClient.getViews(event.getId()));
     }
 
     @Override
@@ -53,7 +55,7 @@ public class EventServiceImpl implements EventService {
         event = updateEventFields(event, updatedEvent);
         repository.save(event);
         log.info("Updated event id: {}", eventId);
-        return mapper.toEventFullDto(event);
+        return mapper.toEventFullDto(event, statsClient.getViews(event.getId()));
     }
 
     @Override
@@ -70,7 +72,7 @@ public class EventServiceImpl implements EventService {
         event.setPublishedOn(LocalDateTime.now());
         repository.save(event);
         log.info("Published event id: {}", eventId);
-        return mapper.toEventFullDto(event);
+        return mapper.toEventFullDto(event, statsClient.getViews(event.getId()));
     }
 
     @Override
@@ -82,7 +84,7 @@ public class EventServiceImpl implements EventService {
         event.setState(EventStatus.CANCELED);
         repository.save(event);
         log.info("Rejected event id: {}", eventId);
-        return mapper.toEventFullDto(event);
+        return mapper.toEventFullDto(event, statsClient.getViews(event.getId()));
     }
 
     @Override
@@ -99,7 +101,7 @@ public class EventServiceImpl implements EventService {
         event = updateEventFields(event, updatedEvent);
         repository.save(event);
         log.info("Updated event id: {}", event.getId());
-        return mapper.toEventFullDto(event);
+        return mapper.toEventFullDto(event, statsClient.getViews(event.getId()));
     }
 
     @Override
@@ -113,7 +115,7 @@ public class EventServiceImpl implements EventService {
         event.setState(EventStatus.CANCELED);
         repository.save(event);
         log.info("Canceled event id: {}", eventId);
-        return mapper.toEventFullDto(event);
+        return mapper.toEventFullDto(event, statsClient.getViews(event.getId()));
     }
 
     @Override
@@ -130,21 +132,21 @@ public class EventServiceImpl implements EventService {
         }
         return repository.findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateBetween(
                 users, eventStatusList, categories, rangeStart, rangeEnd, OffsetPageRequest.of(from, size)
-        ).stream().map(mapper::toEventFullDto).collect(Collectors.toList());
+        ).stream().map(e -> mapper.toEventFullDto(e, statsClient.getViews(e.getId()))).collect(Collectors.toList());
     }
 
     @Override
     public List<EventFullDto> getByUserId(Long userId, int from, int size) {
         userService.getById(userId); //throws exception if user does not exist
         return repository.findAllByInitiatorId(userId, OffsetPageRequest.of(from, size)).stream()
-                .map(mapper::toEventFullDto).collect(Collectors.toList());
+                .map(e -> mapper.toEventFullDto(e, statsClient.getViews(e.getId()))).collect(Collectors.toList());
     }
 
     @Override
     public EventFullDto getById(Long eventId, Long userId) {
         Event event = repository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         checkInitiator(event, userId);
-        return mapper.toEventFullDto(event);
+        return mapper.toEventFullDto(event, statsClient.getViews(event.getId()));
     }
 
     @Override
@@ -152,9 +154,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getByIdPublic(Long eventId) {
         Event event = repository.findAllByIdAndState(eventId, EventStatus.PUBLISHED)
                 .orElseThrow(() -> new EventNotFoundException(eventId));
-        event.setViews(event.getViews() + 1);
-        repository.save(event);
-        return mapper.toEventFullDto(event);
+        return mapper.toEventFullDto(event, statsClient.getViews(event.getId()));
     }
 
     @Override
@@ -182,7 +182,9 @@ public class EventServiceImpl implements EventService {
             events = repository.findAllByParams(text, categories, paid, rangeStart, rangeEnd, EventStatus.PUBLISHED,
                     OffsetPageRequest.of(from, size, sortValue));
         }
-        return events.stream().map(mapper::toEventShortDto).collect(Collectors.toList());
+        return events.stream()
+                .map(e -> mapper.toEventShortDto(e, statsClient.getViews(e.getId())))
+                .collect(Collectors.toList());
     }
 
     @Override
